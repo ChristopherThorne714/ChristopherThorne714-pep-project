@@ -36,9 +36,9 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.get("/example-endpoint", this::exampleHandler);
         app.get("/messages", this::getMessagesHandler);
+        app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.post("/messages", this::createMessageHandler);
         app.delete("/messages/{message_id}", this::deleteMessageHandler);
-        app.start(8080);
         return app;
     }
 
@@ -49,11 +49,26 @@ public class SocialMediaController {
     private void exampleHandler(Context context) {
         context.json("sample text");
     }
-    
+
+
+    /**
+     * response should contain the list of retrieved messages
+     * @param ctx
+     */
     private void getMessagesHandler(Context ctx) {
         List<Message> messageList = messageService.getAllMessages();
         ctx.json(messageList);
     }
+
+
+    /**
+     * response should be 
+     * @param ctx
+     */
+    private void getMessageByIdHandler(Context ctx) {
+        ctx.json(messageService.getMessageById(Integer.parseInt(ctx.pathParam("message_id"))));
+    }
+
     /**
      * response should contain the newly created message
      * @param ctx
@@ -68,12 +83,19 @@ public class SocialMediaController {
             ctx.status(400);
         }
     }
+
+
     /**
      * response should contain the deleted message entry
      * @param ctx
      */
     private void deleteMessageHandler(Context ctx) {
-
+        int message_id = ctx.attribute("message_id");
+        if ((messageService.getMessageById(message_id) != null)) {
+            ctx.json(messageService.deleteMessage(message_id));
+        } else {
+            ctx.status(400);
+        }
     }
 
 

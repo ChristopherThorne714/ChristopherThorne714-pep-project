@@ -19,10 +19,18 @@ public class MessageService {
         this.messageDAO = messageDAO;
     }
 
+    /**
+     * 
+     * @return List<Messages>
+     */
     public List<Message> getAllMessages() {
         return messageDAO.getAllMessages();
     }
 
+    /* */
+    public Message getMessageById(int message_id) {
+        return messageDAO.getMessageById(message_id);
+    }
     /**
      * 
      * @param message to be added
