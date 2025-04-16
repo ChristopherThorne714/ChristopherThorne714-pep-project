@@ -1,5 +1,13 @@
 package Controller;
 
+import Model.Account;
+import Model.Message;
+import Service.AccountService;
+import Service.MessageService;
+
+import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -9,15 +17,28 @@ import io.javalin.http.Context;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
+    MessageService messageService;
+    // AccountService accountService;
+
     /**
+     * TODO: create the following routes: 
+     * get("/messages/{message_id}");
+     * delete("/messages/{message_id}");
+     * get("/accounts/{account_id}/messages/");
+     * patch("/messages/{message_id}");
+     * post("/login");
+     * post("/register");
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
      * @return a Javalin app object which defines the behavior of the Javalin controller.
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.get("example-endpoint", this::exampleHandler);
-
+        app.get("/example-endpoint", this::exampleHandler);
+        app.get("/messages", this::getMessagesHandler);
+        app.post("/messages", this::createMessageHandler);
+        app.delete("/messages/{message_id}", this::deleteMessageHandler);
+        app.start(8080);
         return app;
     }
 
@@ -27,6 +48,32 @@ public class SocialMediaController {
      */
     private void exampleHandler(Context context) {
         context.json("sample text");
+    }
+    
+    private void getMessagesHandler(Context ctx) {
+        List<Message> messageList = messageService.getAllMessages();
+        ctx.json(messageList);
+    }
+    /**
+     * response should contain the newly created message
+     * @param ctx
+     * @throws JsonProcessingException
+     */
+    private void createMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        if ((messageService.addMessage(message)) != null) {
+            ctx.json(mapper.writeValueAsString(message));
+        } else {
+            ctx.status(400);
+        }
+    }
+    /**
+     * response should contain the deleted message entry
+     * @param ctx
+     */
+    private void deleteMessageHandler(Context ctx) {
+
     }
 
 
