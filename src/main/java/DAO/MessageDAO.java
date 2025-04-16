@@ -57,7 +57,7 @@ public class MessageDAO {
         Connection con = ConnectionUtil.getConnection();
 
         try {
-            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES ?, ?, ?;";
+            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?, ?, ?);";
             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             ps.setInt(1, message.getPosted_by());

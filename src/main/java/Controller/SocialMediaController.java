@@ -66,7 +66,7 @@ public class SocialMediaController {
 
 
     /**
-     * response should be 
+     * response should be the found message object
      * @param ctx
      */
     private void getMessageByIdHandler(Context ctx) {
@@ -75,14 +75,16 @@ public class SocialMediaController {
 
     /**
      * response should contain the newly created message
+     * @status should be 200 if successful, 400 if unsuccessful
      * @param ctx
      * @throws JsonProcessingException
      */
     private void createMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
-        if ((messageService.addMessage(message)) != null) {
-            ctx.json(mapper.writeValueAsString(message));
+        Message addedMessage = messageService.addMessage(message);
+        if (addedMessage != null) {
+            ctx.json(mapper.writeValueAsString(addedMessage));
         } else {
             ctx.status(400);
         }
@@ -90,14 +92,17 @@ public class SocialMediaController {
 
     /**
      * should return an updated message
+     * @status should be 200 if successful, 400 if unsuccessful
      * @param ctx
      */
     private void patchMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
-        Message updatedMessage = messageService.updateMessage(Integer.parseInt("message_id"), message);
-        if (updatedMessage != null) {
-            ctx.json(updatedMessage);
+        Message updatedMessage = messageService.updateMessage(Integer.parseInt(ctx.pathParam("message_id")), message);
+        if (message.getMessage_text() == null || message.getMessage_text().isBlank() == true || message.getMessage_text().isEmpty() == true) {
+            ctx.status(400);
+        } else if (updatedMessage != null) {
+            ctx.json(mapper.writeValueAsString(updatedMessage));
         } else {
             ctx.status(400);
         }
@@ -105,13 +110,15 @@ public class SocialMediaController {
 
     /**
      * response should contain the deleted message entry
+     * @status should be 200 if successful, 400 if unsuccessful
      * @param ctx
      */
-    private void deleteMessageHandler(Context ctx) {
+    private void deleteMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         Message deletedMessage = messageService.removeMessage(message_id);
         if (deletedMessage != null) {
-            ctx.json(deletedMessage);
+            ctx.json(mapper.writeValueAsString(deletedMessage));
         } else {
             ctx.status(400);
         }
