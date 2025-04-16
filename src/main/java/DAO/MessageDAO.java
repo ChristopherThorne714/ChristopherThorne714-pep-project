@@ -76,9 +76,29 @@ public class MessageDAO {
         return null;
     }
 
+    /* */
+    public Boolean updateMessage(int message_id, Message message) {
+        Connection con = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?;";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, message.getMessage_text());
+            ps.setInt(2, message_id);
+
+            int result = ps.executeUpdate();
+            if (result != 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
 
     /* */
-    public void deleteMessage(int message_id) {
+    public Boolean deleteMessage(int message_id) {
         Connection con = ConnectionUtil.getConnection();
 
         try {
@@ -87,9 +107,13 @@ public class MessageDAO {
 
             ps.setInt(1, message_id);
 
-            ps.executeUpdate();
+            int result = ps.executeUpdate();
+            if (result != 0) {
+                return true;
+            }
         } catch(SQLException e) {
             System.err.println(e.getMessage());
         }
+        return false;
     }
 }

@@ -18,12 +18,17 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
     MessageService messageService;
-    // AccountService accountService;
+    AccountService accountService;
+
+    public SocialMediaController() {
+        this.messageService = new MessageService();
+        this.accountService = new AccountService();
+    }
 
     /**
      * TODO: create the following routes: 
-     * get("/messages/{message_id}");
-     * delete("/messages/{message_id}");
+     * get("/messages/{message_id}"); //
+     * delete("/messages/{message_id}"); //
      * get("/accounts/{account_id}/messages/");
      * patch("/messages/{message_id}");
      * post("/login");
@@ -38,6 +43,7 @@ public class SocialMediaController {
         app.get("/messages", this::getMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.post("/messages", this::createMessageHandler);
+        app.patch("/messages/{message_id}", this::patchMessageHandler);
         app.delete("/messages/{message_id}", this::deleteMessageHandler);
         return app;
     }
@@ -49,8 +55,6 @@ public class SocialMediaController {
     private void exampleHandler(Context context) {
         context.json("sample text");
     }
-
-
     /**
      * response should contain the list of retrieved messages
      * @param ctx
@@ -84,6 +88,20 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * should return an updated message
+     * @param ctx
+     */
+    private void patchMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        Message updatedMessage = messageService.updateMessage(Integer.parseInt("message_id"), message);
+        if (updatedMessage != null) {
+            ctx.json(updatedMessage);
+        } else {
+            ctx.status(400);
+        }
+    }
 
     /**
      * response should contain the deleted message entry
@@ -91,8 +109,9 @@ public class SocialMediaController {
      */
     private void deleteMessageHandler(Context ctx) {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        if ((messageService.getMessageById(message_id) != null)) {
-            ctx.json(messageService.removeMessage(message_id));
+        Message deletedMessage = messageService.removeMessage(message_id);
+        if (deletedMessage != null) {
+            ctx.json(deletedMessage);
         } else {
             ctx.status(400);
         }

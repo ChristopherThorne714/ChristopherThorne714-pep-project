@@ -44,15 +44,24 @@ public class MessageService {
         return messageDAO.insertMessage(message);
      }
 
+     /* */
+     public Message updateMessage(int message_id, Message message) {
+        if ((messageDAO.updateMessage(message_id, message)) == true) {
+            return messageDAO.getMessageById(message_id);
+        }
+        return null;
+     }
+
      /**
       * 
       * @param message_id with which to retrieve a message
       * @return the deleted message as JSON
       */
      public Message removeMessage(int message_id) {
-        Message message = messageDAO.getMessageById(message_id);
-        messageDAO.deleteMessage(message_id);
-        return message;
+        if ((messageDAO.deleteMessage(message_id)) == true) {
+            return messageDAO.getMessageById(message_id);
+        }
+        return null;
      }
 
 }
