@@ -56,7 +56,7 @@ public class SocialMediaController {
         context.json("sample text");
     }
     /**
-     * response should contain the list of retrieved messages
+     * @response should contain the list of retrieved messages
      * @param ctx
      */
     private void getMessagesHandler(Context ctx) {
@@ -66,15 +66,21 @@ public class SocialMediaController {
 
 
     /**
-     * response should be the found message object
+     * @status 200 if message found, 400 otherwise
+     * @response should be the found message object
      * @param ctx
      */
     private void getMessageByIdHandler(Context ctx) {
-        ctx.json(messageService.getMessageById(Integer.parseInt(ctx.pathParam("message_id"))));
+        Message message = messageService.getMessageById(Integer.parseInt(ctx.pathParam("message_id")));
+        if (message == null) { 
+            return;
+        } else {
+            ctx.json(message);
+        }
     }
 
     /**
-     * response should contain the newly created message
+     * @response should contain the newly created message
      * @status should be 200 if successful, 400 if unsuccessful
      * @param ctx
      * @throws JsonProcessingException
@@ -83,7 +89,9 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
         Message addedMessage = messageService.addMessage(message);
-        if (addedMessage != null) {
+        if (message.getMessage_text() == null || message.getMessage_text().isBlank() == true || message.getMessage_text().isEmpty() == true) {
+            ctx.status(400);
+        } else if (addedMessage != null) {
             ctx.json(mapper.writeValueAsString(addedMessage));
         } else {
             ctx.status(400);
@@ -91,7 +99,7 @@ public class SocialMediaController {
     }
 
     /**
-     * should return an updated message
+     * @response should return an updated message
      * @status should be 200 if successful, 400 if unsuccessful
      * @param ctx
      */
@@ -109,7 +117,7 @@ public class SocialMediaController {
     }
 
     /**
-     * response should contain the deleted message entry
+     * @response should contain the deleted message entry
      * @status should be 200 if successful, 400 if unsuccessful
      * @param ctx
      */
