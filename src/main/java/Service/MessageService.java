@@ -21,22 +21,38 @@ public class MessageService {
 
     /**
      * 
-     * @return List<Messages>
+     * @return List<Messages> as JSON
      */
     public List<Message> getAllMessages() {
         return messageDAO.getAllMessages();
     }
 
-    /* */
+    /**
+     * 
+     * @param message_id with which to retrieve a message
+     * @return retrieved message
+     */
     public Message getMessageById(int message_id) {
         return messageDAO.getMessageById(message_id);
     }
     /**
      * 
      * @param message to be added
-     * @return message added
+     * @return message added as JSON
      */
      public Message addMessage(Message message) {
         return messageDAO.insertMessage(message);
      }
+
+     /**
+      * 
+      * @param message_id with which to retrieve a message
+      * @return the deleted message as JSON
+      */
+     public Message removeMessage(int message_id) {
+        Message message = messageDAO.getMessageById(message_id);
+        messageDAO.deleteMessage(message_id);
+        return message;
+     }
+
 }
