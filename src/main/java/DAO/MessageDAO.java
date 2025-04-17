@@ -9,6 +9,10 @@ import java.util.List;
 
 public class MessageDAO {
 
+    /**
+     * should create a list with all messages from message table 
+     * @return a list of all message objects in db
+     */
     public List<Message> getAllMessages() {
         Connection con = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
@@ -18,7 +22,7 @@ public class MessageDAO {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Message message = new Message(rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
                 messages.add(message);
             }
         } catch(SQLException e) {
@@ -27,7 +31,11 @@ public class MessageDAO {
         return messages;
     }
 
-    /* */
+    /**
+     * should select a message using the id and return the updated message
+     * @param message_id id to use in the sql query
+     * @return the updated message if successful or null otherwise
+     */
     public Message getMessageById(int message_id) {
         Connection con = ConnectionUtil.getConnection();
 
@@ -75,7 +83,7 @@ public class MessageDAO {
     }
 
     /**
-     * 
+     * should insert the given message into the db and return the newly created object 
      * @param message to be inserted to db
      * @return  message inserted
     */
@@ -104,7 +112,12 @@ public class MessageDAO {
         return null;
     }
 
-    /* */
+    /**
+     * should update a message in db and return true or false based on success
+     * @param message_id id of the message to be updated
+     * @param message message text to update with
+     * @return true or false based on success 
+     */
     public Boolean updateMessage(int message_id, Message message) {
         Connection con = ConnectionUtil.getConnection();
 
@@ -125,7 +138,10 @@ public class MessageDAO {
         return false;
     }
 
-    /* */
+    /**
+     *  should delete a message and return nothing
+     * @param message_id id of the message to be deleted
+     */
     public void deleteMessage(int message_id) {
         Connection con = ConnectionUtil.getConnection();
 
