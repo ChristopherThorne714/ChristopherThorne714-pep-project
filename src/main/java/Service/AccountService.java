@@ -1,9 +1,7 @@
 package Service;
 
 import DAO.AccountDAO;
-import DAO.MessageDAO;
 import Model.Account;
-import java.util.List;
 
 public class AccountService {
     private AccountDAO accountDAO;
@@ -27,6 +25,15 @@ public class AccountService {
      */
     public Account addAccount(Account account) {
         return accountDAO.insertAccount(account);
+    }
+
+    /**
+     * should pass on account to the DAO for validation and return the validated account or null if unsuccessful
+     * @param account to be validated
+     * @return validated account or null
+     */
+    public Account login(Account account) {
+        return accountDAO.validateAccount(account);
     }
 
 

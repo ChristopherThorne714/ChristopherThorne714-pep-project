@@ -26,6 +26,7 @@ public class SocialMediaController {
     }
 
     /**
+     * DONE
      * TODO: create the following routes: 
      * get("/messages/{message_id}"); //
      * delete("/messages/{message_id}"); //
@@ -40,6 +41,7 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::createAccountHandler);
+        app.post("/login", this::loginHandler);
 
         app.get("/example-endpoint", this::exampleHandler);
         app.get("/messages", this::getMessagesHandler);
@@ -60,7 +62,7 @@ public class SocialMediaController {
     }
 
     /**
-     * 
+     * should attempt to create an account with the given information form ctx and resonds with a json of the new account if successful or status 400 if not
      * @param ctx
      */
     private void createAccountHandler(Context ctx) throws JsonProcessingException {
@@ -71,6 +73,21 @@ public class SocialMediaController {
             ctx.json(createdAccount);
         } else {
             ctx.status(400);
+        }
+    }
+
+    /**
+     * should attempt to validate login credentials against the db
+     * @param ctx
+     */
+    private void loginHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
+        Account validatedAccount = accountService.login(account);
+        if(validatedAccount != null) {
+            ctx.json(validatedAccount);
+        } else {
+            ctx.status(401);
         }
     }
 

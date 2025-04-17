@@ -4,8 +4,6 @@ import Model.Account;
 import Util.ConnectionUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AccountDAO {
 
@@ -36,6 +34,31 @@ public class AccountDAO {
             } catch(SQLException e) {
                 System.err.println(e.getMessage());
             }
+        }
+        return null;
+    }
+
+    /**
+     * should query the database for an account object and validate against it then return the validated account object or null if unsuccessful
+     * @param account for querying
+     * @return validated Account object or null
+     */
+    public Account validateAccount(Account account) {
+        Connection con = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "SELECT * FROM account WHERE username= ? AND password = ?;";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1,account.getUsername());
+            ps.setString(2, account.getPassword());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+            }
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
         }
         return null;
     }
