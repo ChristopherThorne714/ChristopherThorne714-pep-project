@@ -98,7 +98,7 @@ public class MessageDAO {
     }
 
     /* */
-    public Boolean deleteMessage(int message_id) {
+    public void deleteMessage(int message_id) {
         Connection con = ConnectionUtil.getConnection();
 
         try {
@@ -107,13 +107,9 @@ public class MessageDAO {
 
             ps.setInt(1, message_id);
 
-            int result = ps.executeUpdate();
-            if (result != 0) {
-                return true;
-            }
+            ps.executeUpdate();
         } catch(SQLException e) {
             System.err.println(e.getMessage());
         }
-        return false;
     }
 }

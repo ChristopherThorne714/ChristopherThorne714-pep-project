@@ -4,6 +4,10 @@ import DAO.MessageDAO;
 import Model.Message;
 import java.util.List;
 
+/**
+ * service layer for interacting with MessageDAO instances
+ * to be called by endpoint handlers in SocialMediaController
+ */
 public class MessageService {
     private MessageDAO messageDAO;
     
@@ -12,7 +16,7 @@ public class MessageService {
     }
 
     /**
-     * 
+     * for testing purposes
      * @param messageDAO
      */
     public MessageService(MessageDAO messageDAO) {
@@ -20,7 +24,7 @@ public class MessageService {
     }
 
     /**
-     * 
+     * gets a list of all messages
      * @return List<Messages> as JSON
      */
     public List<Message> getAllMessages() {
@@ -28,7 +32,7 @@ public class MessageService {
     }
 
     /**
-     * 
+     * gets a message using the provided id
      * @param message_id with which to retrieve a message
      * @return retrieved message
      */
@@ -36,7 +40,7 @@ public class MessageService {
         return messageDAO.getMessageById(message_id);
     }
     /**
-     * 
+     * inserts a message into message table
      * @param message to be added
      * @return message added as JSON
      */
@@ -44,7 +48,12 @@ public class MessageService {
         return messageDAO.insertMessage(message);
      }
 
-     /* */
+     /**
+      * 
+      * @param message_id: the id of the message to be updated
+      * @param message: the new text to update the message with
+      * @return the message that's been updated or null if there was no update
+      */
      public Message updateMessage(int message_id, Message message) {
         if ((messageDAO.updateMessage(message_id, message)) == true) {
             return messageDAO.getMessageById(message_id);
@@ -58,10 +67,9 @@ public class MessageService {
       * @return the deleted message as JSON
       */
      public Message removeMessage(int message_id) {
-        if ((messageDAO.deleteMessage(message_id)) == true) {
-            return messageDAO.getMessageById(message_id);
-        }
-        return null;
+        Message message = getMessageById(message_id);
+        messageDAO.deleteMessage(message_id);
+        return message;
      }
 
 }

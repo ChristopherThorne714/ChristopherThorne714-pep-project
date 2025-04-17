@@ -123,12 +123,11 @@ public class SocialMediaController {
      */
     private void deleteMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        Message deletedMessage = messageService.removeMessage(message_id);
-        if (deletedMessage != null) {
-            ctx.json(mapper.writeValueAsString(deletedMessage));
+        Message deletedMessage = messageService.removeMessage(Integer.parseInt(ctx.pathParam("message_id")));
+        if (deletedMessage == null) {
+            ctx.json("");
         } else {
-            ctx.status(400);
+            ctx.json(mapper.writeValueAsString(deletedMessage));
         }
     }
 
