@@ -39,9 +39,12 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
+        app.post("/register", this::createAccountHandler);
+
         app.get("/example-endpoint", this::exampleHandler);
         app.get("/messages", this::getMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
+        app.get("/accounts/{account_id}/messages", this::getAccountMessagesHandler);
         app.post("/messages", this::createMessageHandler);
         app.patch("/messages/{message_id}", this::patchMessageHandler);
         app.delete("/messages/{message_id}", this::deleteMessageHandler);
@@ -55,6 +58,22 @@ public class SocialMediaController {
     private void exampleHandler(Context context) {
         context.json("sample text");
     }
+
+    /**
+     * 
+     * @param ctx
+     */
+    private void createAccountHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
+        Account createdAccount = accountService.addAccount(account);
+        if(account != null) {
+            ctx.json(createdAccount);
+        } else {
+            ctx.status(400);
+        }
+    }
+
     /**
      * @response should contain the list of retrieved messages
      * @param ctx
@@ -79,6 +98,12 @@ public class SocialMediaController {
         }
     }
 
+    /* */
+    private void getAccountMessagesHandler(Context ctx) {
+        List<Message> messages = messageService.getAccountMessages(Integer.parseInt(ctx.pathParam("account_id")));
+        ctx.json(messages);
+    }
+
     /**
      * @response should contain the newly created message
      * @status should be 200 if successful, 400 if unsuccessful
@@ -89,9 +114,8 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
         Message addedMessage = messageService.addMessage(message);
-        if (message.getMessage_text() == null || message.getMessage_text().isBlank() == true || message.getMessage_text().isEmpty() == true) {
-            ctx.status(400);
-        } else if (addedMessage != null) {
+
+        if (addedMessage != null) {
             ctx.json(mapper.writeValueAsString(addedMessage));
         } else {
             ctx.status(400);

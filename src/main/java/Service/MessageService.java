@@ -39,6 +39,16 @@ public class MessageService {
     public Message getMessageById(int message_id) {
         return messageDAO.getMessageById(message_id);
     }
+
+    /**
+     * gets a list of all messages belonging to a particular account
+     * @param account_id: id belonging to the account whose messages are being queried
+     * @return list of messages associated with the account_id
+     */
+    public List<Message> getAccountMessages(int account_id) {
+        return messageDAO.getAccountMessages(account_id);
+    }
+
     /**
      * inserts a message into message table
      * @param message to be added
