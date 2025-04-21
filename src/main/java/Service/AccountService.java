@@ -24,7 +24,11 @@ public class AccountService {
      * @return the inserted account
      */
     public Account addAccount(Account account) {
-        return accountDAO.insertAccount(account);
+        if (account.getUsername().isBlank() != true && account.getPassword().length() >= 4) {
+            return accountDAO.insertAccount(account);
+        } else {
+            return null;
+        }
     }
 
     /**

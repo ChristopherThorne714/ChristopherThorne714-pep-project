@@ -55,8 +55,12 @@ public class MessageService {
      * @return message added as JSON
      */
      public Message addMessage(Message message) {
-        return messageDAO.insertMessage(message);
-     }
+        if (message.getMessage_text().isBlank() != true && message.getMessage_text().length() <= 255) {
+            return messageDAO.insertMessage(message);
+        } else {
+            return null;
+        }
+    }
 
      /**
       * 

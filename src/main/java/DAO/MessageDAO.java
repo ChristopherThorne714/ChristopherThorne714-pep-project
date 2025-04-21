@@ -89,25 +89,23 @@ public class MessageDAO {
     */
     public Message insertMessage(Message message) {
         Connection con = ConnectionUtil.getConnection();
-        String msgText = message.getMessage_text();
-        if (msgText.isBlank() != true && msgText.length() <= 255) {
-            try {
-                String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?, ?, ?);";
-                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try {
+            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM account WHERE account.account_id = ?)";
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-                ps.setInt(1, message.getPosted_by());
-                ps.setString(2, message.getMessage_text());
-                ps.setLong(3, message.getTime_posted_epoch());
+            ps.setInt(1, message.getPosted_by());
+            ps.setString(2, message.getMessage_text());
+            ps.setLong(3, message.getTime_posted_epoch());
+            ps.setInt(4, message.getPosted_by());
 
-                ps.executeUpdate();
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    int generated_message_key = (int) rs.getLong(1);
-                    return new Message(generated_message_key, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
-                }
-            } catch(SQLException e) {
-                System.err.println(e.getMessage());
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int generated_message_key = (int) rs.getLong(1);
+                return new Message(generated_message_key, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
             }
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
         }
         return null;
     }
